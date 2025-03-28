@@ -6,7 +6,13 @@ import numpy as np
 
 """ supporting functions """
 
-def frame_IDs(given_track, frame): # returns a list of cells in a track at a chosen frame
+def frame_IDs(given_track, frame):
+    """
+    Returns a list of cells in a given track at the given frame:
+        
+        given_track: target track
+        frame: target frame
+    """
     out = []
     
     for t in given_track:
@@ -16,7 +22,16 @@ def frame_IDs(given_track, frame): # returns a list of cells in a track at a cho
     return out
 
 
-def lineage_reconstruct(given_track, div, frame, ID): # recursively reconstructs a cell's lineage returning a string of "frame_ID" separated by "<"
+def lineage_reconstruct(given_track, div, frame, ID):
+    """
+    Recursively reconstructs a cell's lineage spaced with '<'':
+        
+        given_track: target track
+        div: division history
+        frame: frame
+        ID: id
+    """
+    
     found = False
     mother = ['', []]
     i = 0
@@ -46,7 +61,16 @@ def lineage_reconstruct(given_track, div, frame, ID): # recursively reconstructs
     return mother
 
 
-def find_cells(source_stack, frame, idi): # returns the short and long camera intensities for a given frame_ID; [-1;-1] if not found
+def find_cells(source_stack, frame, idi):
+    """
+    Returns the short and long camera intensities for a given cell:
+        
+        source_stack: target track
+        frame: target frame
+        idi: target ID
+    
+    [-1;-1] means not found
+    """
     out = [-1, -1]
     
     for i in range(len(source_stack[2])):
@@ -58,6 +82,12 @@ def find_cells(source_stack, frame, idi): # returns the short and long camera in
 
 
 def lineage_express(transformed, source_stack): # reconstructs the intensity levels of a lineage based of transform() as [frame, ID, short, long, histone]; interpol is the interpolation boolean
+    """
+    Recostructs transformed lineages:
+        
+        transformed: output of lineage_transform
+        source_stack: raw data
+    """
     out = []
     
     for t in transformed:
@@ -76,6 +106,10 @@ def lineage_express(transformed, source_stack): # reconstructs the intensity lev
 
 
 def lineage_transform(string): # transforms the lineage_reconstruct string output to a dataframe
+    """
+    Processes an extracted embryo stack:
+        x:
+    """
     out = []
 
     while len(string) > 0:
@@ -86,9 +120,32 @@ def lineage_transform(string): # transforms the lineage_reconstruct string outpu
     return np.flip(np.array(out), axis=0)
 
 
+def prune_stack(source_stack, allow = 0):  # removes lineages that have fewer than max nodes identified (allow = tolerance frames)
+    """
+    Processes an extracted embryo stack:
+        x:
+    """
+    out = []
+    max_len = 0
+    
+    for cell in source_stack:
+        if len(cell[1]) > max_len:
+            max_len = len(cell[1])
+    
+    for cell in source_stack:
+        if max_len - len(cell[1]) <= allow:
+            out.append(cell)
+    
+    return out
+
+
 """ main function """
 
-def process_stack(stack_name, data_directory = "None", stack_category = "None", metric_name = "None"): # processes an embryo stack
+def process_stack(stack_name, data_directory = "None", stack_category = "None", metric_name = "None", prune = [True, 0]):
+    """
+    Processes an extracted embryo stack:
+        x:
+    """
     
     if data_directory == "None":
         data_directory = os.getcwd()
@@ -199,6 +256,10 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
         lin = lineage_reconstruct(track, divisions, cell[0], cell[1])
         stack_data.append([cell, lineage_express(lineage_transform(lin[0]), raw_stack), lin[1]])
         tick += 1
+    
+    # prune short lineages if enabled
+    if prune[0]:
+        stack_data = prune_stack(stack_data, prune[1])
     
     # compute stack intensity max values
     black_max = -1
