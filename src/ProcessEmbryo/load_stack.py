@@ -155,8 +155,10 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
         meta: stack meta-data containing division frames, timing and min-max value ranges as [divisions, [start_frame, end_frame], all_ranges]
     """
     
+    main_directory = os.getcwd()
+    
     if data_directory == "None":
-        data_directory = os.getcwd()
+        data_directory = "datasets"
     
     if stack_category == "None":
         stack_category = "Nanog_Gata6"
@@ -164,7 +166,7 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
     if metric_name == "None":
         metric_name = "MeanIntensity_nowarp"
     
-    stack_directory = os.path.join(data_directory, "datasets", stack_category, stack_name)
+    stack_directory = os.path.join(main_directory, data_directory, stack_category, stack_name)
     extraction_directory = os.path.join(stack_directory, "extraction")
     
     # load embryo tree graph
@@ -295,7 +297,3 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
     
     return stack_data, raw_data, meta
 
-
-""" test """
-
-test_stack, test_raw, test_meta = process_stack("230212_stack6")
