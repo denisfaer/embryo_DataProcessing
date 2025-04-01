@@ -9,7 +9,6 @@ import numpy as np
 def frame_IDs(given_track, frame):
     """
     Returns a list of cells in a given track at the given frame:
-        
         given_track: target track
         frame: target frame
     """
@@ -24,8 +23,7 @@ def frame_IDs(given_track, frame):
 
 def lineage_reconstruct(given_track, div, frame, ID):
     """
-    Recursively reconstructs a cell's lineage spaced with '<'':
-        
+    Recursively reconstructs a cell's [frame, ID] lineage as a string spaced with '<':
         given_track: target track
         div: division history
         frame: frame
@@ -61,15 +59,14 @@ def lineage_reconstruct(given_track, div, frame, ID):
     return mother
 
 
-def find_cells(source_stack, frame, idi):
+def find_cells(frame, idi, source_stack):
     """
-    Returns the short and long camera intensities for a given cell:
-        
-        source_stack: target track
+    Finds the short and long camera intensities for a given cell [frame, idi]:
         frame: target frame
         idi: target ID
+        source_stack: raw stack data
     
-    [-1;-1] means not found
+    Returns [-1;-1] if the cell isn't found
     """
     out = [-1, -1]
     
@@ -81,34 +78,10 @@ def find_cells(source_stack, frame, idi):
     return out
 
 
-def lineage_express(transformed, source_stack): # reconstructs the intensity levels of a lineage based of transform() as [frame, ID, short, long, histone]; interpol is the interpolation boolean
+def lineage_transform(string):
     """
-    Recostructs transformed lineages:
-        
-        transformed: output of lineage_transform
-        source_stack: raw data
-    """
-    out = []
-    
-    for t in transformed:
-        temp = find_cells(source_stack, t[0], t[1])
-        temph1 = -1
-        temph2 = [-1, -1, -1]
-        for i in range(len(source_stack[0])):
-            if t[0] == source_stack[0][i][0] and t[1] == source_stack[0][i][1]:
-                temph1 = source_stack[0][i][2]
-                temph2 = source_stack[0][i][3]
-                break
-        if temp[0] > 0:
-            out.append([t[0], t[1], temp[0], temp[1], temph1, temph2])
-    
-    return np.array(out)
-
-
-def lineage_transform(string): # transforms the lineage_reconstruct string output to a dataframe
-    """
-    Processes an extracted embryo stack:
-        x:
+    Transforms a lineage string to an array of [frame, ID]:
+        string: lineage_reconstruct() output string of cells in a lineage
     """
     out = []
 
@@ -120,10 +93,36 @@ def lineage_transform(string): # transforms the lineage_reconstruct string outpu
     return np.flip(np.array(out), axis=0)
 
 
-def prune_stack(source_stack, allow = 0):  # removes lineages that have fewer than max nodes identified (allow = tolerance frames)
+def lineage_express(transformed, source_stack):
     """
-    Processes an extracted embryo stack:
-        x:
+    Recostructs the lineage_transform() output as a list of [frame, ID, short, long, histone]:
+        transformed: lineage_transform() list containing the sequence of tracked cells' [frame, ID]
+        source_stack: raw stack data
+    """
+    out = []
+    
+    for t in transformed:
+        temp = find_cells(t[0], t[1], source_stack)
+        temph = -1
+        temp_centroid = [-1, -1, -1]
+        for i in range(len(source_stack[0])):
+            if t[0] == source_stack[0][i][0] and t[1] == source_stack[0][i][1]:
+                temph = source_stack[0][i][2]
+                temp_centroid[0] = source_stack[0][i][3]
+                temp_centroid[1] = source_stack[0][i][4]
+                temp_centroid[2] = source_stack[0][i][5]
+                break
+        if temp[0] > 0:
+            out.append([t[0], t[1], temp[0], temp[1], temph, temp_centroid[0], temp_centroid[1], temp_centroid[2]])
+    
+    return np.array(out)
+
+
+def prune_stack(source_stack, allow = 0):
+    """
+    Returns a stack with shorter lineages removed:
+        source_stack: raw stack data
+        allow: tolerance on shorter lineages (frames)
     """
     out = []
     max_len = 0
@@ -144,7 +143,16 @@ def prune_stack(source_stack, allow = 0):  # removes lineages that have fewer th
 def process_stack(stack_name, data_directory = "None", stack_category = "None", metric_name = "None", prune = [True, 0]):
     """
     Processes an extracted embryo stack:
-        x:
+        stack_name: name of the target stack
+        data_directory: custom data folder name
+        stack_category: custom category folder name
+        metric_name: custom CSV column name
+        prune: [bool, int] defining pruning and prune allowance
+        
+    Returns:
+        stack_data: formatted stack lineages
+        raw_data: raw stack data tracks and inesities as [track, raw_stack]
+        meta: stack meta-data containing division frames, timing and min-max value ranges as [divisions, [start_frame, end_frame], all_ranges]
     """
     
     if data_directory == "None":
@@ -208,7 +216,7 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
                 centZ = row.index("Centroid_3")
                 header = False
             else:
-                histone.append([int(row[frame]), int(row[ID]), float(row[intense]), [float(row[centX]), float(row[centY]), float(row[centZ])]])
+                histone.append([int(row[frame]), int(row[ID]), float(row[intense]), float(row[centX]), float(row[centY]), float(row[centZ])])
     histone = np.array(histone)
     
     short = []
@@ -239,6 +247,7 @@ def process_stack(stack_name, data_directory = "None", stack_category = "None", 
                 long.append([int(row[frame]), int(row[ID]), float(row[intense])])
     long = np.array(long)
     
+    # save raw data
     raw_stack = [histone, long, short]
     
     # set tracking limits to frames with reporter data
