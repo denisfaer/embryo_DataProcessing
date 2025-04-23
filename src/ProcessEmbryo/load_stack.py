@@ -326,12 +326,12 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
     
     # compute stack intensity max values
     stack_maxs = []
-    for i in range(channels + 1):
+    for i in range(channels):
         tmp_max = -1
         for lineage in stack_data:
             for cell in lineage[1]:
-                if (len(cell) - 1) <= (i + 5):
-                    tmp_max = max(tmp_max, max(cell[i + 5]))
+                if (len(cell) - 1) >= (i + 5):
+                    tmp_max = max(tmp_max, cell[i + 5])
         stack_maxs.append(tmp_max)
     
     if glob_echo:
@@ -340,12 +340,12 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
     
     # compute stack intensity min values
     stack_mins = []
-    for i in range(channels + 1):
+    for i in range(channels):
         tmp_min = 999_999_999
         for lineage in stack_data:
             for cell in lineage[1]:
-                if (len(cell) - 1) <= (i + 5):
-                    tmp_min = min(tmp_min, min(cell[i + 5]))
+                if (len(cell) - 1) >= (i + 5):
+                    tmp_min = min(tmp_min, cell[i + 5])
         stack_mins.append(tmp_min)
     
     if glob_echo:
@@ -358,6 +358,6 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
     
     if glob_echo:
         print()
-        print('Finished processing' + stack_name)
+        print('Finished processing ' + stack_name)
     
     return [stack_data, stack_raw, stack_meta]

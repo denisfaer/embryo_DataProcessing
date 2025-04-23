@@ -2,12 +2,12 @@
 This package was designed to optimize Posfai lab light sheet data processing and visualiztion
 
 Modules:
-    load_stack: Loads and reconstructs a given stack from extraction data
+    load_stack: Loads and reconstructs a given stack's data from raw extraction files
 """
 
 from .load_stack import frame_IDs, lineage_reconstruct, find_cells, lineage_express, lineage_transform, prune_stack, process_stack
 
-__version__ = "25.03.31"
+__version__ = "25.04.22"
 
 __all__ = [
     "frame_IDs",
