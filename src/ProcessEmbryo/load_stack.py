@@ -4,6 +4,7 @@ import csv
 import os
 import numpy as np
 from pathlib import Path
+import pickle
 
 """ supporting functions """
 
@@ -185,6 +186,7 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
     """
     
     # grab stack name and stack directory
+    stack_dir = stack_dir.replace('\\', '/')
     last_dash = stack_dir.rfind('/')
     if last_dash == len(stack_dir) - 1:
         stack_dir = stack_dir[:-1]
@@ -266,6 +268,7 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
                 histone.append([int(row[frame]), int(row[ID]), float(row[intense]), centroid[0], centroid[1], centroid[2]])
     histone = np.array(histone)
     extracted_stack.append(histone)
+    
     if glob_echo:
         print('Histone loaded')
     
@@ -285,8 +288,9 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
                     tmp.append([int(row[frame]), int(row[ID]), float(row[intense])])
         tmp = np.array(tmp)
         extracted_stack.append(tmp)
+        
         if glob_echo:
-            print('Channel_' + str(i) + ' loaded')
+            print('Signal_' + str(i) + ' loaded')
     
     """ reconstruct cell lineages """
     if glob_echo:
@@ -354,10 +358,45 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
         
     # format output
     stack_raw = [track, extracted_stack]
-    stack_meta = [divisions, [start_frame, end_frame], [stack_mins, stack_maxs]]
+    stack_meta = [divisions, [start_frame, end_frame], [stack_mins, stack_maxs], [stack_name, stack_directory]]
     
     if glob_echo:
         print()
         print('Finished processing ' + stack_name)
     
     return [stack_data, stack_raw, stack_meta]
+
+
+def save_stack(proc_stack, nametag = "None", save_directory = "Null"):
+    """
+    Saves a processed stack as a pickled file:
+        proc_stack: processed stack as an output of process_stack()
+        nametag: custom name to append to the front of the .pkl file
+        save_directory: custom output directory for the .pkl file
+    """
+    if save_directory == "Null":
+        out_dir = proc_stack[2][3][1]
+    else:
+        out_dir = Path(save_directory)
+    
+    filename = 'processed.pkl'
+    
+    if nametag != "None":
+        filename = nametag + '_' + filename
+    
+    pickle_file = open(os.path.join(out_dir, filename), 'wb')
+    pickle.dump(proc_stack, pickle_file)
+    pickle_file.close()
+
+
+def get_stack(stack_pickle):
+    """
+    Loads processed stack data from a pickled file:
+        stack_pickle: string path to the stack data pickle file
+    """
+    pickle_path = Path(stack_pickle)
+    pickle_file = open(pickle_path, 'rb+')
+    pickled_stack = pickle.load(pickle_file)
+    pickle_file.close()
+    
+    return pickled_stack
