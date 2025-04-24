@@ -34,14 +34,5 @@ The following libraries are used:
 
 * Test the package by running StackLoad_test.ipynb
 
-### Required libraries
-The following libraries are used:
-* numpy
-* csv
-* os
-* pathlib
-* pickle
-* matplotib
-
 ## Details on src/ProcessEmbryo
 **load_stack.py** contains core stack processing, saving and loading functions
