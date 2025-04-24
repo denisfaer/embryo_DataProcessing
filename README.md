@@ -38,7 +38,7 @@ The following libraries are used:
 **load_stack.py** contains core stack processing, saving and loading functions
 * **frame_IDs** returns a list of cells in a given track at the given frame
 * **lineage_reconstruct** recursively reconstructs a cell's lineage as a string spaced with '<'
-* **lineage_transform** transforms a lineage_reconstruct string to an arraya
+* **lineage_transform** transforms a lineage_reconstruct string to an array
 * **find_cells** finds all channel intensities for a given cell
 * **lineage_express** reconstructs lineage_transform into datasets with centroid and all channel data
 * **prune_stack** filters out short lineages
