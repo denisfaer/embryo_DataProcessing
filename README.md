@@ -36,3 +36,4 @@ The following libraries are used:
 
 ## Details on src/ProcessEmbryo
 **load_stack.py** contains core stack processing, saving and loading functions
+* frame_IDs() returns a list of cells in a given track at the given frame
