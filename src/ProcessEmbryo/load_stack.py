@@ -69,17 +69,17 @@ def lineage_reconstruct(given_track, div, frame, ID, echo = True, full_echo = Fa
     return mother
 
 
-def lineage_transform(string):
+def lineage_transform(lin_string):
     """
     Transforms a lineage string to an array of [frame, ID]:
-        string: lineage_reconstruct() output string of cells in a lineage
+        lin_string: lineage_reconstruct() output string of cells in a lineage
     """
     out = []
 
-    while len(string) > 0:
-        sub = string[0:string.index('<')]
+    while len(lin_string) > 0:
+        sub = lin_string[0:lin_string.index('<')]
         out.append([int(sub[0:sub.find('_')]), int(sub[(1 + sub.find('_')):len(sub)])])
-        string = string.replace(sub + '<', '')
+        lin_string = lin_string.replace(sub + '<', '')
     
     return np.flip(np.array(out), axis=0)
 
@@ -142,7 +142,7 @@ def prune_stack(recon_stack, allow = 0, echo = True):
     Returns a stack with shorter lineages removed:
         recon_stack: reconstructed stack data
         allow: tolerance for shorter lineages (in frames, from longest lineage)
-        echo: report lineage pruning
+        echo: report pruned lineages
     """
     out = []
     max_len = 0
@@ -153,7 +153,7 @@ def prune_stack(recon_stack, allow = 0, echo = True):
     
     if echo:
         print()
-        print('Prune incomplete lineages:')
+        print('Pruning incomplete lineages:')
     
     for i in range(len(recon_stack)):
         if max_len - len(recon_stack[i][1]) <= allow:
@@ -185,7 +185,7 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
         meta: stack meta-data containing [divisions, [start_frame, end_frame], [stack_mins, stack_maxs]]
     """
     
-    # grab stack name and stack directory
+    """ grab stack name and stack directory """
     stack_dir = stack_dir.replace('\\', '/')
     last_dash = stack_dir.rfind('/')
     if last_dash == len(stack_dir) - 1:
@@ -297,11 +297,12 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
         print()
         print('Reconstructing cell lineages:')
     
-    # set tracking limits to frames with reporter data
+    # set tracking start to the first frame with channel data
     start_frame = -1
     for chan in extracted_stack:
         start_frame = max(start_frame, min(chan[:,0].astype(int)))
     
+    # set tracking end to the last frame with channel data
     end_frame = 999_999_999
     for chan in extracted_stack:
         end_frame = min(end_frame, max(chan[:,0].astype(int)))
@@ -319,16 +320,16 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
         stack_data.append([cell, lineage_express(lineage_transform(lin[0]), extracted_stack), lin[1]])
         tick += 1
     
-    # prune short lineages (if enabled)
+    # prune incomplete lineages
     if prune[0]:
         stack_data = prune_stack(stack_data, prune[1], echo = glob_echo)
         
-    """ process data for outputting """
+    """ format data for outputting """
     if glob_echo:
         print()
         print('Computing metadata:')
     
-    # compute stack intensity max values
+    # compute channel intensity max values
     stack_maxs = []
     for i in range(channels):
         tmp_max = -1
@@ -342,7 +343,7 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
         print('Maximum intensities:')
         print(stack_maxs)
     
-    # compute stack intensity min values
+    # compute channel intensity min values
     stack_mins = []
     for i in range(channels):
         tmp_min = 999_999_999
@@ -370,7 +371,7 @@ def process_stack(stack_dir, channels = 3, histone_metric = "MeanIntensity_nowar
 def save_stack(proc_stack, nametag = "None", save_directory = "Null"):
     """
     Saves a processed stack as a pickled file:
-        proc_stack: processed stack as an output of process_stack()
+        proc_stack: processed stack as the output of process_stack()
         nametag: custom name to append to the front of the .pkl file
         save_directory: custom output directory for the .pkl file
     """
@@ -392,7 +393,7 @@ def save_stack(proc_stack, nametag = "None", save_directory = "Null"):
 def get_stack(stack_pickle):
     """
     Loads processed stack data from a pickled file:
-        stack_pickle: string path to the stack data pickle file
+        stack_pickle: string path to the processed stack data .pkl file
     """
     pickle_path = Path(stack_pickle)
     pickle_file = open(pickle_path, 'rb+')
