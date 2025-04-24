@@ -16,6 +16,7 @@ The following libraries are used:
 * pickle
 * matplotib
 
+### Installation steps
 * Install hatch
   ```
   pip install hatch
@@ -26,7 +27,6 @@ The following libraries are used:
   git clone https://github.com/denisfaer/embryo_DataProcessing.git
   ```
 
-### Installation steps
 * Navigate into the GIT folder & install the package
   ```
   pip install .
