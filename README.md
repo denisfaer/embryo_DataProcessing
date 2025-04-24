@@ -36,4 +36,12 @@ The following libraries are used:
 
 ## Details on src/ProcessEmbryo
 **load_stack.py** contains core stack processing, saving and loading functions
-* frame_IDs() returns a list of cells in a given track at the given frame
+* **frame_IDs** returns a list of cells in a given track at the given frame
+* **lineage_reconstruct** recursively reconstructs a cell's lineage as a string spaced with '<'
+* **lineage_transform** transforms a lineage_reconstruct string to an arraya
+* **find_cells** finds all channel intensities for a given cell
+* **lineage_express** reconstructs lineage_transform into datasets with centroid and all channel data
+* **prune_stack** filters out short lineages
+* **process_stack** main function that gets extraction data and processes the stack
+* **save_stack** saves a processed stack
+* **get_stack** loads a processed stack
