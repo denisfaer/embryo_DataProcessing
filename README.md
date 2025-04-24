@@ -34,7 +34,7 @@ The following libraries are used:
 
 * Test the package by running StackLoad_test.ipynb
 
-## Brief descriptions of provided functions:
+## Brief function description:
 **load_stack.py** contains core stack processing, saving and loading functions
 * **frame_IDs** returns a list of cells in a given track at the given frame
 * **lineage_reconstruct** recursively reconstructs a cell's lineage as a string spaced with '<'
