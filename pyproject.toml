@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ProcessEmbryo"
+dynamic = ["version"]
+description = "Custom Posfai Lab library for processing extracted embryo data"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["numpy", "matplotlib"]
+
+[project.urls]
+"Homepage" = "https://github.com/denisfaer/embryo_DataProcessing"
+
+[tool.hatch.version]
+path = "src/ProcessEmbryo/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ProcessEmbryo"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src"]
