@@ -7,7 +7,7 @@ Modules:
 
 from .process_stack import frame_IDs, lineage_reconstruct, find_cells, lineage_express, lineage_transform, prune_stack, process_stack, save_stack, get_stack
 
-__version__ = "25.05.07"
+__version__ = "25.06.04"
 
 __all__ = [
     "frame_IDs",
