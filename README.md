@@ -1,4 +1,4 @@
-## Scripts used to analyze transcription factor dynamics in early mouse embryogenesis
+## Scripts used to analyze preimplantation mouse embryogenesis dynamics
 ### DF Faerberg | Posfai Lab | Princeton University
 
 ## Description
