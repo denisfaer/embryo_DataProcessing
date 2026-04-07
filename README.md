@@ -31,9 +31,9 @@ Create a new environment with  the following versions of Python and libraries:
 
 ## ProcessEmbryo functions
 
-### Load_Stack
+### Process_Stack
 
-**load_stack.py** contains core stack processing, saving and loading functions
+**process_stack.py** contains core stack processing, saving and loading functions
 * **frame_IDs** returns a list of cells in a given track at the given frame
 * **lineage_reconstruct** recursively reconstructs a cell's lineage as a string spaced with '<'
 * **lineage_transform** transforms a lineage_reconstruct string to an array
