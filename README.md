@@ -3,7 +3,7 @@
 
 ## Description
 This is a custom Posfai lab repository used to develop codes to process and visualize data showing dynamics of transcription factors in pre-implantation mouse embryogenesis.
-It was originally designed for use with the outputs of the computational pipeline described in (Nunley H. et al., Development 2024; doi: https://doi.org/10.1242/dev.202817), modified to use with the pipeline in (Kim-Yip R. & Denberg D. et al., Current Biology 2025; https://doi.org/10.1016/j.cub.2025.07.031), and now being adapted to processing the embryo data more broadly.
+It was originally designed for use with the outputs of the computational pipeline described in (Nunley H. et al., *Development* 2024; doi: https://doi.org/10.1242/dev.202817), modified to use with the pipeline in (Kim-Yip R. & Denberg D. et al., *Current Biology* 2025; https://doi.org/10.1016/j.cub.2025.07.031), and now being adapted to processing the embryo data more broadly.
 
 ### Installation instructions
 Create a new environment with  the following versions of Python and libraries:
